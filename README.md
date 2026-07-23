@@ -1,4 +1,4 @@
-# SkillSphere - پروژه‌ های اشتراکی
+# SkillSphere
 
 ![Django](https://img.shields.io/badge/Django-5.2-green)
 ![React](https://img.shields.io/badge/React-18-blue)
@@ -356,12 +356,6 @@ python create_test_data.py
 
 Create a `.env` file:
 
-```env
-# Django
-DEBUG=True
-SECRET_KEY=your-secret-key-here
-ALLOWED_HOSTS=localhost,127.0.0.1
-
 # Database
 DB_ENGINE=django.db.backends.postgresql
 DB_NAME=skillsphere
@@ -422,58 +416,18 @@ npm cache clean --force
 npm run dev
 ```
 
----
 
-## 📚 Documentation
 
-- [DATA_PERSISTENCE_GUIDE.md](DATA_PERSISTENCE_GUIDE.md) - How data is saved
-- [ACTIVITY_TRACKING_UPDATED.md](ACTIVITY_TRACKING_UPDATED.md) - Activity system
-- [FIXES_COMPLETED.md](FIXES_COMPLETED.md) - Recent changes
 
 ---
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
----
 
 ## 👨‍💻 Author
+"Nima Foroutan"
+https://github.com/nimaforo
 
-Created with ❤️ for the developer community
 
----
 
-## 📞 Support
-
-For issues and questions:
-1. Check [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
-2. Review existing issues on GitHub
-3. Create a new issue with detailed information
-
----
-
-## 🎉 Features Roadmap
-
-- [ ] Advanced search with filters
-- [ ] User following system
-- [ ] Project categories and tags
-- [ ] Direct messaging between users
-- [ ] Mobile app (React Native)
-- [ ] Email notifications
-- [ ] Project collaboration (multiple owners)
-- [ ] API rate limiting
-- [ ] User dashboard customization
 
 ---
 
