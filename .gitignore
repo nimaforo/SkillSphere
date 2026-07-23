@@ -1,2 +1,83 @@
-node_modules
-node_modules
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+/media
+/staticfiles
+/static
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Docker
+docker-compose.override.yml
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# Database backups
+db_backup.sql
+*.sql.gz
+
+# Test files (local)
+test_*.py
+check_db.py
+create_test_*.py
+verify_*.py
+
+# Documentation (kept locally but not in repo)
+*.md
+!README.md
+
+# Logs
+/logs/
+*.log
+
+# Node modules in frontend
+my-frontend/node_modules/
+my-frontend/dist/
