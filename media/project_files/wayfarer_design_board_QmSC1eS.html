@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Wayfarer — UI Design Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,600&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F5F7F6;
+    --ink:#16231F;
+    --muted:#5C6B66;
+    --line:#D8DED9;
+    --teal:#0B5D56;
+    --teal-light:#12897F;
+    --coral:#E8622C;
+    --indigo:#4C5FD5;
+    --card:#FFFFFF;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+  }
+  .board{ padding:48px 40px 80px; }
+
+  .board-head{ margin-bottom:38px; }
+  .eyebrow{
+    font-family:'Space Mono',monospace;
+    font-size:12px;
+    letter-spacing:.12em;
+    color:var(--teal);
+    text-transform:uppercase;
+    margin-bottom:10px;
+  }
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size:40px;
+    margin:0 0 6px;
+    letter-spacing:-0.5px;
+  }
+  h1 em{ font-style:italic; font-weight:600; color:var(--teal); }
+  .sub{ color:var(--muted); font-size:15px; max-width:560px; line-height:1.5; margin:0 0 26px;}
+
+  .spec-row{ display:flex; gap:28px; flex-wrap:wrap; align-items:center; }
+  .spec-group{ display:flex; align-items:center; gap:10px; }
+  .swatch{ width:20px; height:20px; border-radius:6px; border:1px solid rgba(0,0,0,.08); }
+  .spec-label{ font-family:'Space Mono',monospace; font-size:11px; color:var(--muted); }
+  .font-sample{ font-size:13px; padding:4px 10px; border:1px solid var(--line); border-radius:20px; background:var(--card);}
+  .font-sample.display{ font-family:'Fraunces',serif; font-weight:600; }
+  .font-sample.body{ font-family:'Inter',sans-serif; font-weight:500; }
+  .font-sample.mono{ font-family:'Space Mono',monospace; }
+
+  .route{
+    position:relative;
+    display:flex;
+    align-items:flex-start;
+    gap:0;
+    margin-top:46px;
+    overflow-x:auto;
+    padding-bottom:20px;
+  }
+  .stop{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    flex:0 0 300px;
+  }
+  .stop:not(:last-child)::after{
+    content:'';
+    position:absolute;
+    top:11px;
+    left:calc(50% + 90px);
+    width:calc(300px - 90px);
+    border-top:2px dashed #B9C7C2;
+    z-index:0;
+  }
+  .stop:not(:last-child) .plane{
+    position:absolute;
+    top:2px;
+    left:calc(50% + 130px);
+    font-size:16px;
+    color:var(--teal-light);
+    z-index:1;
+  }
+  .gate{
+    font-family:'Space Mono',monospace;
+    font-size:11px;
+    letter-spacing:.08em;
+    color:var(--teal);
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:5px 14px;
+    margin-bottom:20px;
+    position:relative;
+    z-index:2;
+  }
+
+  .phone{
+    width:280px;
+    height:580px;
+    background:var(--card);
+    border-radius:34px;
+    border:8px solid #0E1613;
+    box-shadow:0 20px 40px -12px rgba(11,20,17,.25);
+    overflow:hidden;
+    position:relative;
+  }
+  .notch{
+    position:absolute; top:0; left:50%; transform:translateX(-50%);
+    width:120px; height:22px; background:#0E1613; border-radius:0 0 14px 14px; z-index:5;
+  }
+  .screen{ width:100%; height:100%; display:flex; flex-direction:column; }
+
+  .splash{
+    background:linear-gradient(160deg,var(--teal) 0%,#083F3B 100%);
+    color:#fff; align-items:center; justify-content:center; text-align:center; gap:14px; padding-top:20px;
+  }
+  .logo-mark{
+    width:64px;height:64px;border-radius:20px;background:rgba(255,255,255,.14);
+    display:flex;align-items:center;justify-content:center;font-size:28px;border:1px solid rgba(255,255,255,.25);
+  }
+  .word{ font-family:'Fraunces',serif; font-weight:700; font-size:24px; letter-spacing:.5px;}
+  .word em{ font-style:italic; }
+  .tag{ font-size:12px; color:rgba(255,255,255,.65); font-family:'Space Mono',monospace;}
+  .dots{ display:flex; gap:6px; margin-top:10px;}
+  .dots span{ width:5px;height:5px;border-radius:50%; background:rgba(255,255,255,.6);}
+
+  .auth{ padding:34px 22px 20px; background:var(--paper); }
+  .auth .mark-sm{ width:38px;height:38px;border-radius:11px;background:rgba(11,93,86,.1); display:flex;align-items:center;justify-content:center; font-size:17px; color:var(--teal); margin-bottom:18px;}
+  .auth h2{ font-family:'Fraunces',serif; font-weight:700; font-size:24px; margin:0 0 4px;}
+  .auth p.lead{ color:var(--muted); font-size:12.5px; margin:0 0 22px;}
+  .field-label{ font-size:11px; font-weight:600; margin-bottom:6px; color:var(--ink); text-transform:uppercase; letter-spacing:.04em;}
+  .field{
+    background:#fff; border:1px solid var(--line); border-radius:12px; padding:11px 13px;
+    font-size:13px; color:var(--muted); margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;
+  }
+  .btn-primary{
+    background:var(--coral); color:#fff; text-align:center; padding:13px; border-radius:12px;
+    font-weight:600; font-size:14px; margin-top:6px; box-shadow:0 8px 16px -6px rgba(232,98,44,.5);
+  }
+  .switch-line{ text-align:center; font-size:12px; color:var(--muted); margin-top:16px; }
+  .switch-line b{ color:var(--teal); font-weight:700; }
+
+  .home{ background:var(--paper); padding:28px 18px 16px; }
+  .home-top{ display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;}
+  .greet{ font-family:'Fraunces',serif; font-size:19px; font-weight:700;}
+  .logout{ font-size:15px; color:var(--muted);}
+  .explore{ font-size:11.5px; color:var(--muted); margin-bottom:14px;}
+  .pills{ display:flex; gap:8px; margin-bottom:16px; }
+  .pill{
+    font-family:'Space Mono',monospace; font-size:10.5px; padding:6px 12px; border-radius:20px;
+    border:1px dashed var(--line); color:var(--muted); background:#fff;
+  }
+  .pill.active{ background:var(--teal); color:#fff; border-color:var(--teal); }
+  .card{
+    background:#fff; border-radius:16px; display:flex; margin-bottom:12px; overflow:hidden;
+    box-shadow:0 6px 14px -8px rgba(22,35,31,.15);
+  }
+  .thumb{ width:78px; flex:0 0 78px; display:flex; align-items:center; justify-content:center; font-size:22px; }
+  .thumb.food{ background:rgba(232,98,44,.12); color:var(--coral); }
+  .thumb.sights{ background:rgba(11,93,86,.12); color:var(--teal); }
+  .thumb.hotels{ background:rgba(76,95,213,.12); color:var(--indigo); }
+  .card-body{ padding:10px 12px; flex:1;}
+  .stamp{
+    display:inline-block; font-family:'Space Mono',monospace; font-size:9px; letter-spacing:.04em;
+    padding:2px 8px; border-radius:20px; margin-bottom:5px; text-transform:uppercase;
+  }
+  .stamp.food{ background:rgba(232,98,44,.12); color:var(--coral); }
+  .stamp.sights{ background:rgba(11,93,86,.12); color:var(--teal); }
+  .stamp.hotels{ background:rgba(76,95,213,.12); color:var(--indigo); }
+  .card-title{ font-weight:700; font-size:13.5px; margin-bottom:2px;}
+  .card-city{ font-size:11px; color:var(--muted); margin-bottom:3px;}
+  .card-desc{ font-size:10.5px; color:var(--muted); line-height:1.35; }
+
+  .detail{ padding:0; background:#fff; }
+  .hero{ height:170px; background:linear-gradient(160deg,var(--teal-light),var(--teal)); display:flex; align-items:center; justify-content:center; font-size:40px; color:#fff; }
+  .detail-body{ padding:20px 20px 0; }
+  .detail-stamp{
+    display:inline-block; font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.05em;
+    padding:4px 10px; border-radius:20px; background:rgba(11,93,86,.1); color:var(--teal); text-transform:uppercase; margin-bottom:10px;
+  }
+  .detail h3{ font-family:'Fraunces',serif; font-size:20px; margin:0 0 4px; }
+  .detail-city{ font-size:11.5px; color:var(--muted); margin-bottom:14px; }
+  .about-label{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px; }
+  .about-text{ font-size:11.5px; color:var(--muted); line-height:1.5; margin-bottom:16px;}
+  .boarding{
+    margin:0 20px 20px; border:1px solid var(--line); border-radius:12px; padding:12px 14px;
+    display:flex; align-items:center; gap:8px; position:relative; background:var(--paper);
+  }
+  .boarding::before,.boarding::after{
+    content:''; position:absolute; width:14px; height:14px; background:#fff; border:1px solid var(--line);
+    border-radius:50%; top:50%; transform:translateY(-50%);
+  }
+  .boarding::before{ left:-8px; } .boarding::after{ right:-8px; }
+  .boarding span{ font-family:'Space Mono',monospace; font-size:10.5px; color:var(--muted); }
+
+  .caption{ text-align:center; font-family:'Space Mono',monospace; font-size:11px; color:var(--muted); margin-top:16px; }
+</style>
+</head>
+<body>
+<div class="board">
+
+  <div class="board-head">
+    <div class="eyebrow">Design board · v1</div>
+    <h1>Wayfarer <em>— screen flow</em></h1>
+    <p class="sub">Travel-document motif: passport-stamp category tags, boarding-pass detail card, dotted flight path connecting each stop in the flow.</p>
+
+    <div class="spec-row">
+      <div class="spec-group">
+        <div class="swatch" style="background:#0B5D56"></div>
+        <div class="swatch" style="background:#E8622C"></div>
+        <div class="swatch" style="background:#4C5FD5"></div>
+        <div class="swatch" style="background:#F5F7F6;border:1px solid #ccc"></div>
+        <span class="spec-label">TEAL · CORAL · INDIGO · PAPER</span>
+      </div>
+      <div class="spec-group">
+        <span class="font-sample display">Fraunces</span>
+        <span class="font-sample body">Inter</span>
+        <span class="font-sample mono">Space Mono</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="route">
+
+    <div class="stop">
+      <div class="gate">GATE 01 · SPLASH</div>
+      <div class="plane">✈</div>
+      <div class="phone"><div class="notch"></div><div class="screen splash">
+        <div class="logo-mark">🧭</div>
+        <div class="word">WAY<em>FARER</em></div>
+        <div class="tag">YOUR POCKET TRAVEL GUIDE</div>
+        <div class="dots"><span></span><span></span><span></span></div>
+      </div></div>
+    </div>
+
+    <div class="stop">
+      <div class="gate">GATE 02 · LOGIN</div>
+      <div class="plane">✈</div>
+      <div class="phone"><div class="notch"></div><div class="screen auth">
+        <div class="mark-sm">🧭</div>
+        <h2>Welcome back</h2>
+        <p class="lead">Sign in to keep exploring</p>
+        <div class="field-label">Email</div>
+        <div class="field">you@example.com</div>
+        <div class="field-label">Password</div>
+        <div class="field">•••••••• <span>👁</span></div>
+        <div class="btn-primary">Log in</div>
+        <div class="switch-line">Don't have an account? <b>Sign up</b></div>
+      </div></div>
+    </div>
+
+    <div class="stop">
+      <div class="gate">GATE 03 · SIGN UP</div>
+      <div class="plane">✈</div>
+      <div class="phone"><div class="notch"></div><div class="screen auth">
+        <h2>Join Wayfarer</h2>
+        <p class="lead">Save favorites &amp; get personal guides</p>
+        <div class="field-label">Full name</div>
+        <div class="field">Jane Doe</div>
+        <div class="field-label">Email</div>
+        <div class="field">you@example.com</div>
+        <div class="field-label">Password</div>
+        <div class="field">At least 6 characters <span>👁</span></div>
+        <div class="btn-primary">Create account</div>
+      </div></div>
+    </div>
+
+    <div class="stop">
+      <div class="gate">GATE 04 · HOME</div>
+      <div class="plane">✈</div>
+      <div class="phone"><div class="notch"></div><div class="screen home">
+        <div class="home-top"><div class="greet">Hi, Jane 👋</div><div class="logout">⏻</div></div>
+        <div class="explore">Explore places</div>
+        <div class="pills">
+          <div class="pill active">ALL</div><div class="pill">FOOD</div><div class="pill">SIGHTS</div><div class="pill">HOTELS</div>
+        </div>
+        <div class="card">
+          <div class="thumb food">🍽</div>
+          <div class="card-body">
+            <div class="stamp food">Food</div>
+            <div class="card-title">La Petite Bistro</div>
+            <div class="card-city">📍 Paris</div>
+            <div class="card-desc">Cozy French bistro, slow-cooked coq au vin.</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="thumb sights">📷</div>
+          <div class="card-body">
+            <div class="stamp sights">Sights</div>
+            <div class="card-title">Eiffel Tower</div>
+            <div class="card-city">📍 Paris</div>
+            <div class="card-desc">Iconic iron lattice tower, most-visited monument.</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="thumb hotels">🏨</div>
+          <div class="card-body">
+            <div class="stamp hotels">Hotels</div>
+            <div class="card-title">Grand Meridian</div>
+            <div class="card-city">📍 Paris</div>
+            <div class="card-desc">Riverside 5-star with rooftop pool.</div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="stop">
+      <div class="gate">GATE 05 · DETAIL</div>
+      <div class="phone"><div class="notch"></div><div class="screen detail">
+        <div class="hero">📷</div>
+        <div class="detail-body">
+          <div class="detail-stamp">Sights</div>
+          <h3>Eiffel Tower</h3>
+          <div class="detail-city">📍 Paris</div>
+          <div class="about-label">About this place</div>
+          <div class="about-text">Iconic iron lattice tower and the most visited paid monument in the world.</div>
+        </div>
+        <div class="boarding">🗺 <span>Lat 48.8584 · Lng 2.2945</span></div>
+      </div></div>
+    </div>
+
+  </div>
+
+  <div class="caption">Passport-stamp tags mark category · boarding-pass strip carries coordinates like a ticket stub</div>
+
+</div>
+</body>
+</html>

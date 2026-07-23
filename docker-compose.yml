@@ -1,0 +1,169 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: skillsphere_postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME:-skillsphere}
+      POSTGRES_USER: ${DB_USER:-skillsphere_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-skillsphere_password}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-skillsphere_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - skillsphere_network
+
+  # Redis Cache & Message Broker
+  redis:
+    image: redis:7-alpine
+    container_name: skillsphere_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - skillsphere_network
+
+  # Django Application (Development)
+  django:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: skillsphere_django
+    command: sh -c "python manage.py migrate --noinput && python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - DEBUG=${DEBUG:-True}
+      - DB_ENGINE=django.db.backends.postgresql
+      - DB_NAME=${DB_NAME:-skillsphere}
+      - DB_USER=${DB_USER:-skillsphere_user}
+      - DB_PASSWORD=${DB_PASSWORD:-skillsphere_password}
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - ELASTICSEARCH_HOSTS=elasticsearch:9200
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - skillsphere_network
+
+  # Celery Worker
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: skillsphere_celery
+    command: celery -A core worker -l info
+    environment:
+      - DEBUG=${DEBUG:-True}
+      - DB_ENGINE=django.db.backends.postgresql
+      - DB_NAME=${DB_NAME:-skillsphere}
+      - DB_USER=${DB_USER:-skillsphere_user}
+      - DB_PASSWORD=${DB_PASSWORD:-skillsphere_password}
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    volumes:
+      - .:/app
+    depends_on:
+      - postgres
+      - redis
+      - django
+    networks:
+      - skillsphere_network
+
+  # Celery Beat (Scheduler)
+  celery_beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: skillsphere_beat
+    command: celery -A core beat -l info
+    environment:
+      - DEBUG=${DEBUG:-True}
+      - DB_ENGINE=django.db.backends.postgresql
+      - DB_NAME=${DB_NAME:-skillsphere}
+      - DB_USER=${DB_USER:-skillsphere_user}
+      - DB_PASSWORD=${DB_PASSWORD:-skillsphere_password}
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    volumes:
+      - .:/app
+    depends_on:
+      - postgres
+      - redis
+      - django
+    networks:
+      - skillsphere_network
+
+  # Flower (Celery Monitoring)
+  flower:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: skillsphere_flower
+    command: celery -A core flower --port=5555
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+      - django
+    networks:
+      - skillsphere_network
+
+  # Elasticsearch for Full-Text Search
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: skillsphere_elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200 >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - skillsphere_network
+
+volumes:
+  postgres_data:
+  redis_data:
+  elasticsearch_data:
+
+networks:
+  skillsphere_network:
+    driver: bridge
