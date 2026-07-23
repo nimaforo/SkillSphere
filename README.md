@@ -429,8 +429,3 @@ https://github.com/nimaforo
 
 
 
----
-
-**Built with ❤️ using Django, React, and Docker**
-
-For the latest updates, visit: https://github.com/yourusername/skillsphere
